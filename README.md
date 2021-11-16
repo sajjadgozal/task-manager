@@ -14,6 +14,8 @@ clone repo and go to repositorys folder
 run composer command to install dependencies
 ```bash
     composer install
+    cp .env.example .env
+    php artisan key:generate
 ```
 
 setUp database in env file
