@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ReorderRequest;
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\TaskListRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Models\Project;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,13 +19,25 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function index()
+    public function index(TaskListRequest $request)
     {
-        $tasks = Task::with('project')->get()->sortBy('priority');
+
+        $current_project = Arr::exists( $request->validated() , 'project_id') ?  Project::find((int) $request->validated()['project_id'] ) : null ;
+
+        if ($current_project) {
+
+            $tasks =$current_project->tasks;
+
+        }else{
+
+            $tasks = Task::with('project')->get()->sortBy('priority');
+        }
+
+        $projects = Project::all();
 
         $this->reorderAll($tasks);
 
-        return view('Task.index',compact('tasks'));
+        return view('Task.index',compact('tasks' , 'projects' , 'current_project'));
     }
 
     /**
@@ -150,7 +164,6 @@ class TaskController extends Controller
             $row->update();
             $order++;
         }
-
     }
 
 

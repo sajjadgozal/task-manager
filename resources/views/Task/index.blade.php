@@ -29,7 +29,16 @@
                 <th scope="col">Title</th>
                 <th scope="col">priority</th>
                 <th scope="col">description</th>
-                <th scope="col">Project</th>
+                <th scope="col">
+                    <select onChange="filter(this.options[this.selectedIndex].value)">
+                        <option value="0">All</option>
+                        @foreach($projects as $project)
+                            <option value="{{$project->id}}" @if($current_project && $current_project->id == $project->id ) selected  @endif>
+                                {{$project->title}}
+                            </option>
+                        @endforeach
+                    </select>
+                </th>
                 <th scope="col">Finished at</th>
                 <th scope="col">Edit</th>
             </tr>
@@ -79,6 +88,14 @@
     </div>
 
     <script>
+
+        function filter(chosen) {
+
+            query = chosen!=0 ? "?project_id=" + chosen : "" ;
+            window.location.href = "{{route('task.index')}}" + query;
+
+        }
+
         Sortable.create(sortable, {
             animation: 150 ,
             onEnd: function (/**Event*/evt) {
@@ -105,62 +122,9 @@
 
             }
         });
+
+
     </script>
-
-{{--    <script>--}}
-{{--        var fixHelperModified = function(e, tr) {--}}
-{{--                var $originals = tr.children();--}}
-{{--                var $helper = tr.clone();--}}
-{{--                $helper.children().each(function(index) {--}}
-{{--                    $(this).width($originals.eq(index).width())--}}
-{{--                });--}}
-{{--                return $helper;--}}
-{{--            },--}}
-
-{{--            saveToDataBase = function (ui){--}}
-
-{{--                $.ajaxSetup({--}}
-{{--                    headers: {--}}
-{{--                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-{{--                    }--}}
-{{--                });--}}
-
-{{--                $.ajax({--}}
-{{--                    url:  "{{ route('task.reorder') }}" ,--}}
-{{--                    type: 'POST',--}}
-{{--                    data: {'oldIndex':evt.oldIndex,--}}
-{{--                        'newIndex':evt.newIndex},--}}
-{{--                    success: function (data) {--}}
-{{--                        $('td.priority', ui.item.parent()).each(function (i) {--}}
-{{--                            $(this).html(i+1);--}}
-{{--                        });--}}
-{{--                    }--}}
-{{--                });--}}
-
-{{--            }--}}
-
-
-{{--            updateIndex = function(/**Event*/evt, ui) {--}}
-{{--                var itemEl = evt.to;    // target list--}}
-{{--                evt.from;  // previous list--}}
-{{--                console.log(evt.from);--}}
-
-{{--                $('td.priority', ui.item.parent()).each(function (i) {--}}
-{{--                    $(this).html(i+1);--}}
-{{--                });--}}
-
-{{--                // saveToDataBase(ui);--}}
-{{--            };--}}
-
-
-{{--        $("#myTable tbody").sortable({--}}
-{{--            helper: fixHelperModified,--}}
-{{--            stop: updateIndex--}}
-{{--        }).disableSelection();--}}
-
-{{--    </script>--}}
-
-
 </x-layout>
 
 
